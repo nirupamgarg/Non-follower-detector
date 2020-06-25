@@ -1,0 +1,56 @@
+from time import sleep
+from selenium import webdriver
+
+class instabot:
+    def __init__(self, username, pw):
+        self.driver= webdriver.Chrome()
+        sleep(4)
+        self.username = username
+        self.driver.get("https://www.instagram.com/")
+        sleep(2)
+        self.driver.find_element_by_xpath("//input[@name=\"username\"]").send_keys(username)
+        self.driver.find_element_by_xpath("//input[@name=\"password\"]").send_keys(pw)
+        self.driver.find_element_by_xpath("//button[@type=\"submit\"]").click()
+        sleep(4)
+
+        self.driver.find_element_by_xpath("//button[contains(text(), 'Not Now')]").click()
+        sleep(2)
+        self.driver.find_element_by_xpath("//button[contains(text(), 'Not Now')]").click()
+        sleep(2)
+    
+    def get_unfollowers(self):
+        self.driver.find_element_by_xpath("//a[contains(@href,'/nirupamgarg/')]").click()
+        sleep(2)
+        self.driver.find_element_by_xpath("//a[contains(@href,'/nirupamgarg/following/')]").click()
+        sleep(2)
+        following = self._get_names(---Enter your no. of following here---)
+        sleep(2)
+        self.driver.find_element_by_xpath("//a[contains(@href,'/nirupamgarg/followers/')]").click()
+        sleep(2)
+        followers = self._get_names(---Enter your no. of followers here---)
+
+        not_following_back = [user for user in following if user not in followers]
+        print(not_following_back)
+        
+    def _get_names(self, given_length):
+        fBody  = self.driver.find_element_by_xpath("//div[@class='isgrP']")
+        length=0
+        while length != given_length:
+            self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollTop + arguments[0].offsetHeight;', fBody)
+            sleep(1)
+            fList  = self.driver.find_elements_by_xpath("//div[@class='isgrP']//li")
+            length = len(fList)
+            #print("fList len is {}".format(length))
+        print("ended")
+        links = fBody.find_elements_by_tag_name('a')
+        names = [name.text for name in links if name.text !='']
+        self.driver.find_element_by_xpath("/html/body/div[4]/div/div[1]/div/div[2]/button").click()
+        return names
+        #driver.quit()
+
+
+
+
+
+my_bot = instabot('---Enter your username here---', '---Enter your password here---')
+my_bot.get_unfollowers()
